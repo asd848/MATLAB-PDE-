@@ -1,4 +1,4 @@
-function [finalModel, solution] = jouleHeater(sizeSquare,dcVoltage)
+function [model, solution] = jouleHeater(sizeSquare,dcVoltage)
 height= sizeSquare;
 width = sizeSquare;
 
@@ -53,6 +53,5 @@ pdeplot(model,'XYData',u,'Mesh','on')
 xlabel('x')
 ylabel('y')
 
-finalModel = model;
 end
 

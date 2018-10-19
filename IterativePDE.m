@@ -1,5 +1,5 @@
 %% Attempt to code with more than one material
-length = 5;
+length = 2;
 height= length;
 width = length;
 
@@ -38,8 +38,8 @@ for i = 1:height
    applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0,'g',0)
 end
 for i = 1:width
-   applyBoundaryCondition(model,'neumann','Edge',(height*width)-i,'q',0.05,'g',0) 
-   applyBoundaryCondition(model,'neumann','Edge',(height*width)*2-10-i,'q',0.05,'g',0) 
+   applyBoundaryCondition(model,'neumann','Edge',(height*width)-i,'q',0.00,'g',0) 
+   applyBoundaryCondition(model,'neumann','Edge',(height*width)*2-length-i,'q',0.00,'g',0) 
 end
 
 for i = 1:width*height
