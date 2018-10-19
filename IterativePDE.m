@@ -1,5 +1,5 @@
 %% Attempt to code with more than one material
-length = 6;
+length = 5;
 height= length;
 width = length;
 
@@ -32,9 +32,10 @@ geometryFromEdges(model,g);
 % Applying boundary conditions to edges
 for i = 1:height
    applyBoundaryCondition(model,'dirichlet','Edge',i,'r',1,'h',1) 
-   applyBoundaryCondition(model,'dirichlet','Edge',height*width*2-i,'r',0,'h',1) 
-
-%    applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0.05,'g',0)
+%    applyBoundaryCondition(model,'dirichlet','Edge',height*width*2-i,'r',0,'h',1) 
+%     applyBoundaryCondition(model,'neumann','Edge',i,'q',0,'g',0)
+%     applyBoundaryCondition(model,'neumann','Edge',i,'q',0,'g',0)
+   applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0,'g',0)
 end
 for i = 1:width
    applyBoundaryCondition(model,'neumann','Edge',(height*width)-i,'q',0.05,'g',0) 
