@@ -42,7 +42,7 @@ end
 
 
 figure(4);
-pdegplot(model, 'EdgeLabels', 'on')
+pdegplot(model, 'FaceLabels', 'on')
 
 generateMesh(model);
 solution = solvepde(model); % for stationary problems
