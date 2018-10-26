@@ -1,5 +1,5 @@
 %% Getting XY Data from a solution
-voltage = 1;
+voltage = 115;
 sizeSquare = 2;
 
 [xData, yData] = meshgrid(0.5:1:sizeSquare, 0.5:1:sizeSquare);

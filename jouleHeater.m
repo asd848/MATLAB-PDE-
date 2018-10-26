@@ -36,8 +36,13 @@ for i = 1:width
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)*2-sizeSquare-i+1,'r',dcVoltage,'h',1) 
 end
 
+
+%In the for loop below, 'c' is the electric conductivity of the material.
+%Eventually, it should be referencing a matrix as it iterates, but for now,
+%it is set to 1.
+sigma = [1 1 1 1];
 for i = 1:width*height
-   specifyCoefficients(model,'m',0,'d',0,'c',1,'a',0,'f',0,'face',i) 
+   specifyCoefficients(model,'m',0,'d',0,'c',sigma(i),'a',0,'f',0,'face',i) 
 end
 
 
@@ -50,6 +55,7 @@ solution = solvepde(model); % for stationary problems
 u = solution.NodalSolution;
 figure(2);
 pdeplot(model,'XYData',u,'Mesh','on')
+title('Voltage Map of the Window')
 xlabel('x')
 ylabel('y')
 
