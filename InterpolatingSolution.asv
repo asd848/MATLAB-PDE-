@@ -3,9 +3,7 @@ voltage = 115;
 sizeSquare = 2;
 
 
-numMeasurements = 10;
-%Assume that the length of each square is 1
-spacing = 1/numMeasurements;
+numMeasure
 
 %% For each square
 %{
@@ -15,7 +13,7 @@ spacing = 1/numMeasurements;
 %}
 
 %% So far this taking 10 points for each square (for average voltage calculation)
-[xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
+[xData, yData] = meshgrid(0.1:0.1:sizeSquare, 0.1:0.1:sizeSquare);
 mesh = [xData(:) yData(:)];
 xData = mesh(1:end,1);
 yData = mesh(1:end,2);
@@ -31,18 +29,19 @@ uintrp = interpolateSolution(results,xData, yData);
 
 [gradx, grady] = evaluateGradient(results, xData, yData);
 
-xData = unique(xData);
-yData = unique(yData);
-
-normV = zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
-
-for i = 1:length(xData)
-    for j  = 1:length(yData)
-        normV(i,j) = gradx(i).^2 + grady(j).^2;
-    end
-end
 
 
+
+for i = 1 : numMeasurements*sizeSquare
+    for j  = 1:numMeasurements*sizeSquare
+
+
+% %% Take the average of the 100 measurements per square for a gradient
+% 
+%{
+    for i 
+%}
+% 
 
 
 
