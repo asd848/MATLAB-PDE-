@@ -42,6 +42,19 @@ for i = 1:length(xData)
     end
 end
 
+%% Calculate average normV for each square
+
+avgNormV = zeros(sizeSquare,sizeSquare);
+for i = 1:sizeSquare
+    for j = 1:sizeSquare
+        xStartIndex = numMeasurements * (i -1) + 1;
+        xEndIndex = numMeasurements * i;
+        yStartIndex = numMeasurements * (j -1) + j;
+        yEndIndex = numMeasurements * j;
+
+        avgNormV(i,j) = mean(mean(normV(xStartIndex:xEndIndex,yStartIndex:yEndIndex)));
+    end
+end
 
 
 
