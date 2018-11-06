@@ -4,7 +4,7 @@ sizeSquare = 2;
 
 
 numMeasurements = 10;
-%Assume that the length of each square is 1
+%Assume that the length of each square is 1/sizeSquare
 spacing = 1/numMeasurements;
 
 %% For each square
@@ -30,6 +30,9 @@ uintrp = interpolateSolution(results,xData, yData);
 % uintrp(2,1:end) = interpolateSolution(results,xDataReverse,yDataReverse);
 
 [gradx, grady] = evaluateGradient(results, xData, yData);
+
+gradx = sizeSquare.*gradx;
+grady = sizeSquare.*grady;
 
 xData = unique(xData);
 yData = unique(yData);
