@@ -15,19 +15,21 @@ spacing = 1/numMeasurements;
 %}
 
 %% So far this taking 10 points for each square (for average voltage calculation)
-[xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
-mesh = [xData(:) yData(:)];
-xData = mesh(1:end,1);
-yData = mesh(1:end,2);
+% [xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
+% mesh = [xData(:) yData(:)];
+% xData = mesh(1:end,1);
+% yData = mesh(1:end,2);
 
 
 
 [model, results] = jouleHeater(sizeSquare,voltage);
 
-
+[xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
+mesh = [xData(:) yData(:)];
+xData = mesh(1:end,1);
+yData = mesh(1:end,2);
 
 uintrp = interpolateSolution(results,xData, yData);
-% uintrp(2,1:end) = interpolateSolution(results,xDataReverse,yDataReverse);
 
 [gradx, grady] = evaluateGradient(results, xData, yData);
 
@@ -37,17 +39,17 @@ grady = sizeSquare.*grady;
 xData = unique(xData);
 yData = unique(yData);
 
-normV = zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
+Qj= zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
 
 for i = 1:length(xData)
     for j  = 1:length(yData)
-        normV(i,j) = gradx(i).^2 + grady(j).^2;
+        Qj(i,j) = gradx(i).^2 + grady(j).^2;
     end
 end
 
-%% Calculate average normV for each square
+%% Calculate average Qj for each square
 
-avgNormV = zeros(sizeSquare,sizeSquare);
+avgQj = zeros(sizeSquare,sizeSquare);
 for i = 1:sizeSquare
     for j = 1:sizeSquare
         xStartIndex = numMeasurements * (i -1) + 1;
@@ -55,14 +57,10 @@ for i = 1:sizeSquare
         yStartIndex = numMeasurements * (j -1) + j;
         yEndIndex = numMeasurements * j;
 
-        avgNormV(i,j) = mean(mean(normV(xStartIndex:xEndIndex,yStartIndex:yEndIndex)));
+        avgQj(i,j) = mean(mean(Qj(xStartIndex:xEndIndex,yStartIndex:yEndIndex)));
     end
 end
 
 
 
 
-%% Find the average gradient for a specific square
-
-
-% [gradx(1:end),grady(2,1:end)] = evaluateGradient(results, xDataReverse, yDataReverse)';
