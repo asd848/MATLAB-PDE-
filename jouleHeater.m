@@ -10,7 +10,7 @@ function [outThick, qj] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
 
 height= sizeSquare;
 width = sizeSquare;
-conductivity = 1e6; %% made up number
+conductivity = 1e6; %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
 numMeasurements = 10; %relevant for sampling the Qj in each square
 spacing = 1/numMeasurements;
 
