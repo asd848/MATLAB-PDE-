@@ -1,4 +1,13 @@
-function [outThick] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
+function [outThick, qj] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
+%INPUTS:
+%sizeSquare:
+%dcVoltage: voltage input (V)
+%thickness: inital guess for ITO thickness
+%qjDes: desired heating in watt/sq
+%OUTPUTS:
+%outThick: output thickness per square
+%qj: heating per square
+
 height= sizeSquare;
 width = sizeSquare;
 conductivity = 1e6; %% made up number
@@ -87,14 +96,14 @@ yData = mesh(1:end,2);
 gradx = sizeSquare.*gradx;
 grady = sizeSquare.*grady;
 
-xData = unique(xData);
-yData = unique(yData);
+% xData = unique(xData);
+% yData = unique(yData);
 
-Qj= zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
+% Qj= zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
 
 for i = 1:length(xData)
     for j  = 1:length(yData)
-        Qj(i,j) = gradx(i).^2 + grady(j).^2;
+        Qj(i,j) = conductivity* (gradx(i).^2 + grady(j).^2);
     end
 end
 
@@ -116,6 +125,7 @@ end
 outThick = zeros(sizeSquare, sizeSquare);
 
 outThick  = qjDes./avgQj;
+qj = avgQj.*outThick;
 
 end
 
