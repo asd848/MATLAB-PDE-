@@ -55,7 +55,7 @@ end
 
 dl = decsg(gd);
 figure(1);
-pdegplot(dl, 'FaceLabels', 'on', 'EdgeLabels', 'on')
+pdegplot(dl) %'FaceLabels', 'on', 'EdgeLabels', 'on')
 
 gFM = geometryFromEdges(model,dl);
 
@@ -123,3 +123,4 @@ end
 %% Getting output thickness
 outThick  = qjDes./Qj;
 qj = thickness.*Qj;
+
