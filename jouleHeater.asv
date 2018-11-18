@@ -82,15 +82,12 @@ surfaceFit = fit([xPos,yPos],zThickness,'poly23');
 
 %In the for loop below, 'c' is the electric conductance of the material.
 
-% conductance = zeros(sizeSquare, sizeSquare);
-conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width;
+conductance = zeros(sizeSquare, sizeSquare);
+conductance = @() surfaceFit(location.x,location.y);
 for i = 1:width
     for j = 1:height
-            %why is the sizeSquare in the line below??
-%        conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
-%        specifyCoefficients(model,'m',0,'d',0,'c',conductance(i,j),'a',0,'f',0,'face',(i-1)*height+j) ;
-       specifyCoefficients(model,'m',0,'d',0,'c',conductance(location,state),'a',0,'f',0,'face',(i-1)*height+j) ;
-
+       conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
+       specifyCoefficients(model,'m',0,'d',0,'c',conductance(i,j),'a',0,'f',0,'face',(i-1)*height+j) ;
     end
 end
 

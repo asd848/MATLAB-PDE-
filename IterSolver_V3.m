@@ -11,7 +11,7 @@ percent_err = err./qjDes * 100;
 
 % for i=1:10
 %     for j=1:10
-%         if percent_err(i,j) > 10
+%         if percent_err(i,j) > 12
 %             i_thickness(i,j) = i_thickness(i,j)./abs(percent_err(i,j));
 %         elseif percent_err(i,j) < -10
 %             i_thickness(i,j) = i_thickness(i,j).*abs(percent_err(i,j));
