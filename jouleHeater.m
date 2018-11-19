@@ -1,21 +1,25 @@
 function [outThick, qj] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
-%INPUTS:
-%sizeSquare:
-%dcVoltage: voltage input (V)
-%thickness: inital guess for ITO thickness
-%qjDes: desired heating in watt/sq
-%OUTPUTS:
-%outThick: output thickness per square
-%qj: heating per square
+% jouleHeater solves the electrostatics PDE and calculates thickness
+% for a desired surface watt density on a simplified square geometry
+% INPUTS:
+% sizeSquare: dimensions of no. of squares desired sizeSquare x sizeSquare
+% dcVoltage: voltage input (V)
+% thickness: inital guess for ITO thickness
+% qjDes: desired heating in watt/sq
+% OUTPUTS:
+% outThick: output thickness per square
+% qj: heating per square
 
+% Constants
 height= sizeSquare;
 width = sizeSquare;
-conductivity = 1e6; %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
+conductivity = 6.41E5; %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
 numMeasurements = 10; %relevant for sampling the Qj in each square
 spacing = 1/numMeasurements;
 
 model = createpde(); 
 
+% Creating the PDE geometry
 gd = (1:10)';
 ns = [""];
 sf = "";
@@ -36,28 +40,26 @@ ns = ns(2:end);
 g = decsg(gd, sf, ns);
 geometryFromEdges(model,g);
 
-% Applying boundary conditions to edges
+% Applying boundary conditions (no current flux) to left and right edges
 for i = 1:height
     %Left and Right Edges
    applyBoundaryCondition(model,'neumann','Edge',i,'q',0,'g',0);
    applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0,'g',0);
 end
+% Applying boundary conditions (voltage input) to top and bottom edges 
 for i = 1:width
     %Top and Bottom Edges (where we set our voltage)
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)-i+1,'r',-dcVoltage,'h',1); %bottom boundary
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)*2-sizeSquare-i+1,'r',dcVoltage,'h',1); %top boundary
-   
-%    applyBoundaryCondition(model,'dirichlet','Edge',3,'r',-dcVoltage,'h',1); 
-%    applyBoundaryCondition(model,'dirichlet','Edge',1,'r',dcVoltage,'h',1); 
-
 end
 
 
-%In the for loop below, 'c' is the electric conductance of the material.
-%Eventually, it should be referencing a matrix as it iterates, but for now,
-%it is set to 1.
+% In the for loop below, 'c' is the electric conductance of the material.
+% Eventually, it should be referencing a matrix as it iterates, but for 
+% now, it is set to 1.
 conductance = zeros(sizeSquare, sizeSquare);
 
+% Applying the conductance to each square
 for i = 1:width
     for j = 1:height
        conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
@@ -65,14 +67,15 @@ for i = 1:width
     end
 end
 
-
+% Plots for viewing geometry
 % figure(4);
 % pdegplot(model, 'EdgeLabels', 'on')
-
 generateMesh(model);
-solution = solvepde(model); % for stationary problems
+solution = solvepde(model); % for steady state problems
 
 u = solution.NodalSolution;
+
+% Plotting the voltage drop across the geometry
 figure(2);
 pdeplot(model,'XYData',u,'Mesh','on')
 title('Voltage Map of the Window')
@@ -80,10 +83,11 @@ xlabel('x')
 ylabel('y')
 drawnow
 
-% finalModel = model;
-
 
 %% Finding Voltage Gradient (Electric Field) Code
+
+% Creating x and y data points in each square so that we may evaluate the
+% gradient at each point in each square
 [xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
 mesh = [xData(:) yData(:)]; %% Not the mesh used in solving the PDE !!!!
 xData = mesh(1:end,1);
@@ -96,11 +100,8 @@ yData = mesh(1:end,2);
 gradx = sizeSquare.*gradx;
 grady = sizeSquare.*grady;
 
-% xData = unique(xData);
-% yData = unique(yData);
-
-% Qj= zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
-
+% Calculating the Qj for each point within each
+% square
 for i = 1:length(xData)
     for j  = 1:length(yData)
         Qj(i,j) = conductivity* (gradx(i).^2 + grady(j).^2);
@@ -108,7 +109,6 @@ for i = 1:length(xData)
 end
 
 % Calculate average Qj for each square
-
 avgQj = zeros(sizeSquare,sizeSquare);
 for i = 1:sizeSquare
     for j = 1:sizeSquare
