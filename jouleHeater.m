@@ -70,14 +70,15 @@ for k = 1:xLength
         zThickness= [zThickness thickness(m,k)];
     end
 end
-xPos = xPos';
-yPos = yPos';
+xPos = xPos'./2;
+yPos = fliplr(yPos);
+yPos = yPos'./2;
 zThickness = zThickness';
 %surfaceFit is a function z(x,y), which takes in x and y position and
 %outputs thickness. Fit can be adjusted with last parameter.
 % WARNING!!! If program crashes it may be because zThickness did not have
 % enough points for the fit to work. Try changing 'poly23' to 'poly12'.
-surfaceFit = fit([xPos,yPos],zThickness,'poly23');
+surfaceFit = fit([xPos,yPos],zThickness,'poly33');
 
 
 %In the for loop below, 'c' is the electric conductance of the material.
@@ -89,7 +90,7 @@ for i = 1:width
             %why is the sizeSquare in the line below??
 %        conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
 %        specifyCoefficients(model,'m',0,'d',0,'c',conductance(i,j),'a',0,'f',0,'face',(i-1)*height+j) ;
-       specifyCoefficients(model,'m',0,'d',0,'c',conductance(location,state),'a',0,'f',0,'face',(i-1)*height+j) ;
+       specifyCoefficients(model,'m',0,'d',0,'c',conductance,'a',0,'f',0,'face',(i-1)*height+j) ;
 
     end
 end
@@ -98,7 +99,7 @@ end
 % figure(4);
 % pdegplot(model, 'EdgeLabels', 'on')
 
-generateMesh(model);
+generateMesh(model,'hmax',0.1);
 solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;

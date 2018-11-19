@@ -4,7 +4,8 @@ sizeSquare = 5;
 tolerance = 1e-9;
 
 i_thickness = ones(sizeSquare, sizeSquare);
-qjDes = randi(5,5);
+% qjDes = ones(5,5);
+qjDes = randi(5,5).*10;
 [out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
 
 err = abs(sum(sum(out_thickness - i_thickness)));
