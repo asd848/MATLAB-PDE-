@@ -60,31 +60,34 @@ end
 %Decompose thickness matrix into x-y positions with a z value
 xLength = size(thickness,2);
 yLength = size(thickness,1);
+xSpacing = linspace(0,xLength,xLength);
+ySpacing = linspace(yLength,0,yLength);
 xPos = [];
 yPos = [];
 zThickness = [];
 for k = 1:xLength
     for m = 1:yLength
-        xPos = [xPos k];
-        yPos = [yPos m];
+        xPos = [xPos xSpacing(k)];
+        yPos = [yPos ySpacing(m)];
         zThickness= [zThickness thickness(m,k)];
     end
 end
-xPos = xPos'./2;
+xPos = xPos';
 yPos = fliplr(yPos);
-yPos = yPos'./2;
+yPos = yPos';
+
 zThickness = zThickness';
 %surfaceFit is a function z(x,y), which takes in x and y position and
 %outputs thickness. Fit can be adjusted with last parameter.
 % WARNING!!! If program crashes it may be because zThickness did not have
 % enough points for the fit to work. Try changing 'poly23' to 'poly12'.
-surfaceFit = fit([xPos,yPos],zThickness,'poly33');
+surfaceFit = fit([xPos,yPos],zThickness,'cubicinterp');
 
 
 %In the for loop below, 'c' is the electric conductance of the material.
 
 % conductance = zeros(sizeSquare, sizeSquare);
-conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width;
+conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width./sizeSquare; %sizeSquare is to scale our thing down to 1
 for i = 1:width
     for j = 1:height
             %why is the sizeSquare in the line below??
@@ -99,7 +102,7 @@ end
 % figure(4);
 % pdegplot(model, 'EdgeLabels', 'on')
 
-generateMesh(model,'hmax',0.1);
+generateMesh(model,'hmax',0.3);
 solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;
