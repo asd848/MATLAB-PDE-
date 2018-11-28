@@ -4,8 +4,9 @@ tolerance = 1e-16;
 i_thickness = 3000e-10*ones(10,10);
 qjDes = 1.4/0.0254^2*ones(10,10);
 % qjDes = global_heating./(0.0254^2);
-[out_thickness, qj_out] = busBarGeoSplitFull(voltage, i_thickness, qjDes);
-
+initialRun = true;
+[out_thickness, qj_out, voltageMap] = busBarGeoSplitFull(voltage, i_thickness, qjDes, initialRun, 0);
+initialRun = false;
 err = qj_out - qjDes;
 percent_err = err./qjDes * 100;
 
@@ -37,7 +38,7 @@ i = 0;
 while(abs(mean(mean(err))) > tolerance)
    i = i +1;
 %    i_thickness = out_thickness;
-   [out_thickness, qj_out] = busBarGeoSplitFull(voltage, i_thickness, qjDes);
+   [out_thickness, qj_out, voltageMap] = busBarGeoSplitFull(voltage, i_thickness, qjDes,initialRun, voltageMap);
    
    err = qj_out - qjDes;
    percent_err = err./qjDes * 100;

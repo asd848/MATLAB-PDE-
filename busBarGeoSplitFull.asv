@@ -85,10 +85,14 @@ if initialRun
         end
     end
 else
-    conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width./sizeSquare; %sizeSquare is to scale our thing down to 1
-    for i = 1:10
-        for j = 1:10
-           specifyCoefficients(model,'m',0,'d',0,'c',conductance,'a',0,'f',0,'face',(i-1)*height+j) ;
+    x_fit = [x_bottom x_top x]';
+    y_fit = [y_bottom y_top y];
+    
+    Qj = @(solu
+    [gradx_fit,grady_fit] = evaluateGradient(voltageMap, x_fit, y_fit);
+   	Qj_fit = conductivity .* (gradx_fit.^2 + grady_fit.^2);
+     
+    
 end
 
 generateMesh(model, 'Hmax', 1.2);
