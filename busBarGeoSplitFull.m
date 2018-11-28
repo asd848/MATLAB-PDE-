@@ -85,10 +85,13 @@ if initialRun
         end
     end
 else
-    conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width./sizeSquare; %sizeSquare is to scale our thing down to 1
+    conductance = @(location, state) conductance_anyPoint(conductivity, voltageMap, location.x, location.y, qjDesFit);
     for i = 1:10
         for j = 1:10
+            
            specifyCoefficients(model,'m',0,'d',0,'c',conductance,'a',0,'f',0,'face',(i-1)*height+j) ;
+        end
+    end
 end
 
 generateMesh(model, 'Hmax', 1.2);
