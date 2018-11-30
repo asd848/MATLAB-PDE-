@@ -89,7 +89,8 @@ conductance = ones(10,10);
 
 for i=1:10
     for  j=1:10
-        conductance(i,j) = conductivity*thickness(i,j)*sqrt((x(i,j)-x(i,j+1))^2+(y(i,j)-y(i,j+1))^2);
+%         conductance(i,j) = conductivity*thickness(i,j)*sqrt((x(i,j)-x(i,j+1))^2+(y(i,j)-y(i,j+1))^2);
+        conductance(i,j) = conductivity*sqrt((x(i,j)-x(i,j+1))^2+(y(i,j)-y(i,j+1))^2);
     end
 end
 
