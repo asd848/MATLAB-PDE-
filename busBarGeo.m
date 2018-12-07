@@ -11,9 +11,9 @@ y_top = fliplr(y_top);
 
 gd = [2, 22, x_bottom, x_top, y_bottom, y_top]';
 dl = decsg(gd);
-gFM = geometryFromEdges(model,dl);
+geom = geometryFromEdges(model,dl);
 
-pdegplot(dl, 'EdgeLabels','on','VertexLabels','on');
+pdegplot(dl, 'EdgeLabels','on','VertexLabels','on', 'FaceLabels','on');
 % 
 % dcVoltage = 115;
 % applyBoundaryCondition(model,'neumann','Edge',[11, 22],'q',0,'g',0);
