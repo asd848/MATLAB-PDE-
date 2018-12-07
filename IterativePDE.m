@@ -50,6 +50,12 @@ end
 
 figure(1);
 pdegplot(model, 'EdgeLabels', 'on')
+title('2x2 Transparency Model')
+xlim([-0.5 2.5])
+ylim([-0.5 2.5])
+xlabel('X-Position (m)')
+ylabel('Y-Position (m)')
+set(gcf,'color', 'white')
 % specifyCoefficients(model,'m',0,'d',0,'c',10,'a',0,'f',0,'face',1);
 % specifyCoefficients(model,'m',0,'d',0,'c',1,'a',0,'f',0,'face',2);
 
