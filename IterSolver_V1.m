@@ -5,7 +5,9 @@ tolerance = 1e-9;
 
 i_thickness = ones(sizeSquare, sizeSquare);
 % qjDes = ones(5,5);
-qjDes = 1.4/0.0254^2*ones(10,10);
+%qjDes = 1.4/0.0254^2*ones(10,10);
+load('actual_watt_density_global.mat');
+qjDes = actual_watt_density_global./0.0254^2;
 [out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
  fprintf('The watt density is \n');
  disp(qj)
