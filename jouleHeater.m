@@ -157,8 +157,9 @@ end
 %% Getting output thickness
 outThick = zeros(sizeSquare, sizeSquare);
 
-outThick  = qjDes./avgQj;
-qj = avgQj.*outThick;
+%outThick  = qjDes./avgQj;
+%qj = avgQj.*outThick;
+qj = thickness.*avgQj;
 
 end
 
