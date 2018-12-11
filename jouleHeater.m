@@ -81,7 +81,7 @@ zThickness = zThickness';
 %outputs thickness. Fit can be adjusted with last parameter.
 % WARNING!!! If program crashes it may be because zThickness did not have
 % enough points for the fit to work. Try changing 'poly23' to 'poly12'.
-surfaceFit = fit([xPos,yPos],zThickness,'cubicinterp');
+surfaceFit = fit([xPos,yPos],zThickness,'linearinterp');
 
 
 %In the for loop below, 'c' is the electric conductance of the material.
