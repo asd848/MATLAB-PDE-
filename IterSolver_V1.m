@@ -16,7 +16,6 @@ i_thickness = out_thickness;
 %qjDes = 1.4/0.0254^2*ones(10,10);
 load('actual_watt_density_global.mat');
 qjDes = actual_watt_density_global./0.0254^2;
->>>>>>> bccdfa31e18c4d897c3d9f89cab01712c85e1ac1
 [out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
  fprintf('The watt density is \n');
  disp(qj)
