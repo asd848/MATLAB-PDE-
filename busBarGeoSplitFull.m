@@ -56,7 +56,10 @@ end
 dl = decsg(gd);
 figure(1);
 pdegplot(dl) %'FaceLabels', 'on', 'EdgeLabels', 'on')
-
+title('Global Window Geometry Divided into a 10x10 Grid')
+xlabel('x-position (m)')
+ylabel('y-position (m)')
+pause
 gFM = geometryFromEdges(model,dl);
 
 applyBoundaryCondition(model,'neumann','Edge',(102:1:111),'q',0,'g',0);

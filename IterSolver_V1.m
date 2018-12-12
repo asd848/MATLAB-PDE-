@@ -9,6 +9,14 @@ i_thickness = ones(sizeSquare, sizeSquare);
 %% Desired surcace heating of the global window in matrix form
 qjDes = 1.4/0.0254^2*ones(10,10);
 %% initial call to jouleHeater to get a matrix of thicknesses and surface joule heating
+
+% i_thickness = ones(sizeSquare, sizeSquare);
+i_thickness = out_thickness;
+% qjDes = ones(5,5);
+%qjDes = 1.4/0.0254^2*ones(10,10);
+load('actual_watt_density_global.mat');
+qjDes = actual_watt_density_global./0.0254^2;
+>>>>>>> bccdfa31e18c4d897c3d9f89cab01712c85e1ac1
 [out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
  fprintf('The watt density is \n');
  disp(qj)
@@ -17,6 +25,7 @@ err = abs(sum(sum(out_thickness - i_thickness)));
 fprintf('The applied voltage is %d V \n', voltage)
 fprintf('The desired watt density is \n')
 disp(qjDes)
+
 i = 0;
 
 %% Iterations terminate if error drops below tolerance
@@ -36,4 +45,6 @@ while(err > tolerance)
    disp(out_thickness);
    fprintf('The watt density is \n');
    disp(qj)
+
+ 
 end

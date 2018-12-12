@@ -114,6 +114,7 @@ pdeplot(model,'XYData',u,'Mesh','on')
 title('Voltage Map of the Window')
 xlabel('x')
 ylabel('y')
+set(gca,'FontSize',16)
 drawnow
 
 % finalModel = model;
@@ -162,6 +163,7 @@ outThick = zeros(sizeSquare, sizeSquare);
 
 outThick  = qjDes./avgQj;
 qj = avgQj.*outThick;
+%qj = thickness.*avgQj;
 
 end
 
