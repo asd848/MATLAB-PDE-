@@ -18,7 +18,7 @@ spacing = 1/numMeasurements;
 
 %% create PDE model
 model = createpde(); 
-
+%% Setup the geometry of our complete obejct
 gd = (1:10)';
 ns = [""];
 sf = "";
@@ -39,20 +39,16 @@ ns = ns(2:end);
 g = decsg(gd, sf, ns);
 geometryFromEdges(model,g);
 
-% Applying boundary conditions to edges
+%% Applying boundary conditions to edges
 for i = 1:height
-    %Left and Right Edges
+   %Left and Right Edges
    applyBoundaryCondition(model,'neumann','Edge',i,'q',0,'g',0);
    applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0,'g',0);
 end
 for i = 1:width
-    %Top and Bottom Edges (where we set our voltage)
+   %Top and Bottom Edges (where we set our voltage)
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)-i+1,'r',-dcVoltage,'h',1); %bottom boundary
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)*2-sizeSquare-i+1,'r',dcVoltage,'h',1); %top boundary
-   
-%    applyBoundaryCondition(model,'dirichlet','Edge',3,'r',-dcVoltage,'h',1); 
-%    applyBoundaryCondition(model,'dirichlet','Edge',1,'r',dcVoltage,'h',1); 
-
 end
 
 
@@ -60,7 +56,7 @@ end
 %If it isn't continuous then it continuity boundary conditions between
 %square interfaces won't be able to work.
 
-%Decompose thickness matrix into x-y positions with a z value
+%% Decompose thickness matrix into x-y positions with a z value
 xLength = size(thickness,2);
 yLength = size(thickness,1);
 xSpacing = linspace(0,xLength,xLength);
@@ -86,25 +82,16 @@ zThickness = zThickness';
 % enough points for the fit to work. Try changing 'poly23' to 'poly12'.
 surfaceFit = fit([xPos,yPos],zThickness,'linearinterp');
 
-
+%% Apply coefficients to PDE
 %In the for loop below, 'c' is the electric conductance of the material.
-
-% conductance = zeros(sizeSquare, sizeSquare);
 conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width./sizeSquare; %sizeSquare is to scale our thing down to 1
 for i = 1:width
     for j = 1:height
-            %why is the sizeSquare in the line below??
-%        conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
-%        specifyCoefficients(model,'m',0,'d',0,'c',conductance(i,j),'a',0,'f',0,'face',(i-1)*height+j) ;
        specifyCoefficients(model,'m',0,'d',0,'c',conductance,'a',0,'f',0,'face',(i-1)*height+j) ;
-
     end
 end
 
-
-% figure(4);
-% pdegplot(model, 'EdgeLabels', 'on')
-
+%% Get voltage solution from mesh of geometry
 generateMesh(model,'hmax',0.3);
 solution = solvepde(model); % for stationary problems
 
@@ -117,35 +104,25 @@ ylabel('y')
 set(gca,'FontSize',16)
 drawnow
 
-% finalModel = model;
-
-
 %% Finding Voltage Gradient (Electric Field) Code
 [xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
 mesh = [xData(:) yData(:)]; %% Not the mesh used in solving the PDE !!!!
 xData = mesh(1:end,1);
 yData = mesh(1:end,2);
 
-% uintrp = interpolateSolution(results,xData, yData);
-
 [gradx, grady] = evaluateGradient(solution, xData, yData);
 
 gradx = sizeSquare.*gradx;
 grady = sizeSquare.*grady;
 
-% xData = unique(xData);
-% yData = unique(yData);
-
-% Qj= zeros(sizeSquare*numMeasurements,sizeSquare*numMeasurements);
-
+%% Calculate volumetric joule heating
 for i = 1:length(xData)
     for j  = 1:length(yData)
         Qj(i,j) = conductivity* (gradx(i).^2 + grady(j).^2);
     end
 end
 
-% Calculate average Qj for each square
-
+%% Calculate average Qj for each square
 avgQj = zeros(sizeSquare,sizeSquare);
 for i = 1:sizeSquare
     for j = 1:sizeSquare
@@ -160,10 +137,7 @@ end
 
 %% Getting output thickness
 outThick = zeros(sizeSquare, sizeSquare);
-
 outThick  = qjDes./avgQj;
 qj = avgQj.*outThick;
-%qj = thickness.*avgQj;
-
 end
 
