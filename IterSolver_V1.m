@@ -3,7 +3,8 @@ voltage = 115;
 sizeSquare = 10;
 tolerance = 1e-9;
 
-i_thickness = 1e-7*ones(sizeSquare, sizeSquare);
+% i_thickness = ones(sizeSquare, sizeSquare);
+i_thickness = out_thickness;
 % qjDes = ones(5,5);
 %qjDes = 1.4/0.0254^2*ones(10,10);
 load('actual_watt_density_global.mat');
