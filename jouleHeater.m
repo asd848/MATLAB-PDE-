@@ -11,6 +11,7 @@ function [outThick, qj] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
 %% height and width represent how many squares should be along both the edges
 height= sizeSquare;
 width = sizeSquare;
+
 %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
 conductivity = 1e6; 
 numMeasurements = 10; %relevant for sampling the Qj in each square
@@ -18,6 +19,7 @@ spacing = 1/numMeasurements;
 
 %% create PDE model
 model = createpde(); 
+
 %% Setup the geometry of our complete obejct
 gd = (1:10)';
 ns = [""];
@@ -136,7 +138,6 @@ for i = 1:sizeSquare
 end
 
 %% Getting output thickness
-outThick = zeros(sizeSquare, sizeSquare);
 outThick  = qjDes./avgQj;
 qj = avgQj.*outThick;
 end
