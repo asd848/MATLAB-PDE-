@@ -47,7 +47,7 @@ coeffs = @(location,state) conductances(location.x, location.y);
 
 specifyCoefficients(model,'m',0,'d',0,'c',coeffs,'a',0,'f',0,'face',1) ;
 
-generateMesh(model, 'Hmax', 0.01);
+generateMesh(model, 'Hmax', 0.05);
 solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;
