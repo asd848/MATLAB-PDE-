@@ -43,11 +43,11 @@ applyBoundaryCondition(model,'neumann','Edge',2,'q',0,'g',0);
 applyBoundaryCondition(model,'dirichlet','Edge',1,'r',dcVoltage,'h',1); %bottom boundary
 applyBoundaryCondition(model,'dirichlet','Edge',3,'r',-dcVoltage,'h',1); %top boundary
 
-%coeffs = @(location,state) conductances(location.x, location.y);
+coeffs = @(location,state) conductances(location.x, location.y);
 
-specifyCoefficients(model,'m',0,'d',0,'c',0.1,'a',0,'f',0,'face',1) ;
+specifyCoefficients(model,'m',0,'d',0,'c',coeffs,'a',0,'f',0,'face',1) ;
 
-generateMesh(model,'hmax',0.3);
+generateMesh(model, 'Hmax', 0.01);
 solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;
@@ -62,6 +62,6 @@ drawnow
 
 function output = conductances(x, y)
 conductivity = 1e6; 
-output = conductivity*y
+output = conductivity*y;
 end
 
