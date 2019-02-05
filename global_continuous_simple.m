@@ -32,14 +32,14 @@ applyBoundaryCondition(model,'neumann','Edge',11,'q',0,'g',0);
 
 % Applying boundary conditions (voltage input )to top and bottom edges
 % (hard coded for ease)
-applyBoundaryCondition(model,'dirichlet','Edge',(12:1:21),'r',dcVoltage,'h',1);
-applyBoundaryCondition(model,'dirichlet','Edge',(1:1:10),'r',-dcVoltage,'h',1);
+applyBoundaryCondition(model,'dirichlet','Edge',(12:1:21),'r',115,'h',1);
+applyBoundaryCondition(model,'dirichlet','Edge',(1:1:10),'r',-115,'h',1);
 
 coeffs = @(location, state) conductances(location.x, location.y)*(x_bottom(11)-x_bottom(1))/((x_bottom(11)-x_bottom(1))*(y_top(1)-y_bottom(1)));
 
 %c = 1E-7*(x_bottom(11)-x_bottom(1))/((x_bottom(11)-x_bottom(1))*(y_top(1)-y_bottom(1)));
 
-specifyCoefficients(model,'m',0,'d',0,'c',c,'a',0,'f',0,'face',1);
+specifyCoefficients(model,'m',0,'d',0,'c',coeffs,'a',0,'f',0,'face',1);
 generateMesh(model, 'Hmax', 0.05);
 solution = solvepde(model); % for steady state problems
 
@@ -54,5 +54,5 @@ ylabel('y')
 
 function out = conductances(x,y)
     conductivity = 1e6;
-    out = conductivity*y^2;
+    out = conductivity*(y+0.1);
 end
