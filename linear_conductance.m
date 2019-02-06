@@ -1,6 +1,7 @@
 %% height and width represent how many squares should be along both the edges
 height= 1;
 width = 1;
+sizeSquare = 1;
 dcVoltage=115;
 
 %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
@@ -59,6 +60,23 @@ ylabel('y')
 set(gca,'FontSize',16)
 drawnow
 
+%% Finding Voltage Gradient (Electric Field) Code
+[xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
+mesh = [xData(:) yData(:)]; %% Not the mesh used in solving the PDE !!!!
+xData = mesh(1:end,1);
+yData = mesh(1:end,2);
+
+[gradx, grady] = evaluateGradient(solution, xData, yData);
+
+gradx = sizeSquare.*gradx;
+grady = sizeSquare.*grady;
+
+%% Calculate volumetric joule heating
+for i = 1:length(xData)
+    for j  = 1:length(yData)
+        Qj(i,j) = conductivity* (gradx(i).^2 + grady(j).^2);
+    end
+end
 
 function output = conductances(x, y)
 conductivity = 1e6; 
