@@ -62,6 +62,6 @@ drawnow
 
 function output = conductances(x, y)
 conductivity = 1e6; 
-output = conductivity*y;
+output = conductivity*(0.1+y);
 end
 
