@@ -2,7 +2,8 @@
 sizeSquare = 10;
 height= sizeSquare;
 width = sizeSquare;
-qj = randi(10, 10);
+load('actual_watt_density_global.mat');
+qj = actual_watt_density_global./0.0254^2;
 
 model = createpde(); 
 
@@ -37,7 +38,9 @@ for i=1:10
         temp_model = createpde();
         temp_geo = decsg(gd(:,10*(i-1)+j));
         geometryFromEdges(temp_model,temp_geo);
-        mesh = generateMesh(temp_model, 'Hmax', 1);
+        mesh = generateMesh(temp_model, 'Hmin', 4);
+%         pdeplot(temp_model, 'NodeLabels', 'on')
+%         pause
         xy_points = mesh.Nodes;
         qj_xy{11-j,i} = xy_points;
 
@@ -57,5 +60,5 @@ for i=1:10
 end
 
 %% fitting data
-f = fit([x_data, y_data], qj_data, 'poly55');
+f = fit([x_data, y_data], qj_data, 'poly55')
 plot(f, [x_data,y_data], qj_data)
