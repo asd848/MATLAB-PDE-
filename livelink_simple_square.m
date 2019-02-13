@@ -1,21 +1,37 @@
 model = mphload('simple_square.mph');
-mphgetproperties(model.geom('geom1'))
+tol = 1e-16;
+err = 1;
 
-figure;
-mphgeom(model, 'geom1', 'facelabels', 'on');
+% Interpolation of qj
+%model.component('comp1').func.create('int1', 'Interpolation');
+model.component('comp1').func('int1').set('source', 'file');
+model.component('comp1').func('int1').set('filename', 'qj_data.csv');
+model.component('comp1').func('int1').set('interp', 'linear');
+model.component('comp1').func('int1').set('extrap', 'const');
+model.component('comp1').func('int1').set('nargs', 2);
+model.component('comp1').func('int1').set('defvars',false);
+model.component('comp1').func('int1').set('argunit', 'W/m^2');
 
-figure;
-mphmesh(model);
 
-%%
-figure;
-voltage = mphplot(model, 'pg1');
-figure;
-volumetric_heating = mphplot(model, 'pg2');
+% Interpolation of initial thickness
+%model.component('comp1').func.create('int2', 'Interpolation');
+model.component('comp1').func('int2').set('source', 'file');
+model.component('comp1').func('int2').set('filename', 'initial_thickness.csv');
+model.component('comp1').func('int2').set('interp', 'linear');
+model.component('comp1').func('int2').set('extrap', 'const');
+model.component('comp1').func('int2').set('nargs', 2);
+model.component('comp1').func('int2').set('defvars',false);
+model.component('comp1').func('int2').set('argunit', 'm');
 
-% model.component('comp1').func().create('int1', 'Interpolation');
-interp = model.component('comp1').func('int1')
-% model.component('comp1').func('int1').set('interp', 'linear');
+model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
+
+while err > tol
+    model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
+    model.study('std1').run;
+    mphsave(model, 'simple_square.mph')
+    new_delta = mphplot(model, 'pg2');
+    break
+end
 
 %% Commands so far
 %{
@@ -32,4 +48,20 @@ mphgetproperties(model.physics('hteq#').feature('flux1'))
 Set the properties of the boundary conditions
 model.physics('hteq#').feature('flux1').set('q', 1, '#','g',1,'#')
 
+% figure;
+% mphgeom(model, 'geom1', 'facelabels', 'on');
+% 
+% figure;
+% mphmesh(model);
+
+%%
+% figure;
+% voltage = mphplot(model, 'pg1');
+% figure;
+% volumetric_heating = mphplot(model, 'pg2');
+
+
 %}
+
+
+

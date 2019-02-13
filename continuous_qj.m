@@ -2,7 +2,10 @@
 sizeSquare = 10;
 height= sizeSquare;
 width = sizeSquare;
-qj = randi(10, 10);
+load('actual_watt_density_global.mat');
+qj = actual_watt_density_global./0.0254^2;
+load('actual_thickness_global.mat');
+thick = actual_thickness_global.*1e-11;
 
 model = createpde(); 
 
@@ -40,7 +43,6 @@ for i=1:10
         mesh = generateMesh(temp_model, 'Hmax', 1);
         xy_points = mesh.Nodes;
         qj_xy{11-j,i} = xy_points;
-
     end
 end
 
@@ -48,11 +50,13 @@ end
 x_data = [];
 y_data = [];
 qj_data = [];
+thick_data = [];
 for i=1:10
     for j=1:10
         x_data = [x_data; qj_xy{i,j}(1,:)'];
         y_data = [y_data; qj_xy{i,j}(2,:)'];
-        qj_data = [qj_data; qj(i,j)*ones(length(qj_xy{i,j}(1,:)),1)];           
+        qj_data = [qj_data; qj(i,j)*ones(length(qj_xy{i,j}(1,:)),1)]; 
+        thick_data = [thick_data; thick(i,j)*ones(length(qj_xy{i,j}(1,:)),1)]; 
     end
 end
 
