@@ -23,7 +23,8 @@ model.component('comp1').func('int2').set('nargs', 2);
 model.component('comp1').func('int2').set('defvars',false);
 model.component('comp1').func('int2').set('argunit', 'm');
 
-model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
+%model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
+model.result('pg2').feature('surf2').set('expr', '(ecs.Qsrh/int1(x,y))*ecs.ds');
 
 model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
 model.study('std1').run;
