@@ -65,5 +65,5 @@ for i=1:10
 end
 
 %% fitting data
-f = fit([x_data, y_data], qj_data, 'poly55')
-plot(f, [x_data,y_data], qj_data)
+% f = fit([x_data, y_data], qj_data, 'poly55')
+% plot(f, [x_data,y_data], qj_data)
