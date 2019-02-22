@@ -43,8 +43,8 @@ model.component('comp1').func('int2').set('nargs', 2);
 model.component('comp1').func('int2').set('defvars',false);
 model.component('comp1').func('int2').set('argunit', 'm');
 
-%model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
-model.result('pg2').feature('surf2').set('expr', '(sqrt(ecs.Qsrh/int1(x,y)))*ecs.ds');
+model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
+% model.result('pg2').feature('surf2').set('expr', '(sqrt(ecs.Qsrh/int1(x,y)))*ecs.ds');
 %model.result('pg3').feature('surf3').set('expr', 'ecs.Qsrh/int1(x,y)');
 
 % Set the ECS thickness to our interpolated thickness data
