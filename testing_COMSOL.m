@@ -25,7 +25,7 @@ run
 
 %model.component('comp1').func.create('int1', 'Interpolation');
 model.component('comp1').func('int1').set('source', 'file'); % 
-model.component('comp1').func('int1').set('filename', 'qj_test.csv');
+model.component('comp1').func('int1').set('filename', 'test_qj.csv');
 model.component('comp1').func('int1').set('interp', 'linear');
 model.component('comp1').func('int1').set('extrap', 'const');
 model.component('comp1').func('int1').set('nargs', 2);
@@ -34,21 +34,22 @@ model.component('comp1').func('int1').set('argunit', 'W/m^2');
 
 
 % Interpolation of initial thickness
-%model.component('comp1').func.create('int2', 'Interpolation');
-model.component('comp1').func('int2').set('source', 'file');
-model.component('comp1').func('int2').set('filename', 'uniform_inital_thickness.csv');
-model.component('comp1').func('int2').set('interp', 'linear');
-model.component('comp1').func('int2').set('extrap', 'const');
-model.component('comp1').func('int2').set('nargs', 2);
-model.component('comp1').func('int2').set('defvars',false);
-model.component('comp1').func('int2').set('argunit', 'm');
+% model.component('comp1').func.create('int2', 'Interpolation');
+% model.component('comp1').func('int2').set('source', 'file');
+% model.component('comp1').func('int2').set('filename', 'uniform_inital_thickness.csv');
+% model.component('comp1').func('int2').set('interp', 'linear');
+% model.component('comp1').func('int2').set('extrap', 'const');
+% model.component('comp1').func('int2').set('nargs', 2);
+% model.component('comp1').func('int2').set('defvars',false);
+% model.component('comp1').func('int2').set('argunit', 'm');
 
-%model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
-model.result('pg2').feature('surf2').set('expr', '(sqrt(ecs.Qsrh/int1(x,y)))*ecs.ds');
+model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
+% model.result('pg2').feature('surf2').set('expr', '(sqrt(ecs.Qsrh/int1(x,y)))*ecs.ds');
 %model.result('pg3').feature('surf3').set('expr', 'ecs.Qsrh/int1(x,y)');
+% model.result('pg2').feature('surf2').set('expr', 'ecs.Qsrh');
 
 % Set the ECS thickness to our interpolated thickness data
-model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
+model.component('comp1').physics('ecs').prop('ds').set('ds', '1e-7');
 
 % Run the study
 model.study('std1').run;

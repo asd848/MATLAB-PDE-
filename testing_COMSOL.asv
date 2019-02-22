@@ -34,7 +34,7 @@ model.component('comp1').func('int1').set('argunit', 'W/m^2');
 
 
 % Interpolation of initial thickness
-%model.component('comp1').func.create('int2', 'Interpolation');
+model.component('comp1').func.create('int2', 'Interpolation');
 model.component('comp1').func('int2').set('source', 'file');
 model.component('comp1').func('int2').set('filename', 'uniform_inital_thickness.csv');
 model.component('comp1').func('int2').set('interp', 'linear');
@@ -46,9 +46,10 @@ model.component('comp1').func('int2').set('argunit', 'm');
 %model.result('pg2').feature('surf2').set('expr', 'int1(x,y)*ecs.ds/ecs.Qsrh');
 model.result('pg2').feature('surf2').set('expr', '(sqrt(ecs.Qsrh/int1(x,y)))*ecs.ds');
 %model.result('pg3').feature('surf3').set('expr', 'ecs.Qsrh/int1(x,y)');
+% model.result('pg2').feature('surf2').set('expr', 'ecs.Qsrh');
 
 % Set the ECS thickness to our interpolated thickness data
-model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
+model.component('comp1').physics('ecs').prop('ds').set('ds', '0.1+y');
 
 % Run the study
 model.study('std1').run;
@@ -57,35 +58,38 @@ model.study('std1').run;
 mphsave(model, 'simple_square.mph');
 
 % Retreives plot data for plot group 2
-new_delta = mphplot(model, 'pg2');
+qj = mphplot(model, 'pg2');
+qj_write = [qj{1,2}{1,1}.p(1,:)' qj{1,2}{1,1}.p(2,:)' qj{1,2}{1,1}.d];
+% Writing udpated thickness data points to csv
+dlmwrite('test_qj.csv', qj_write, 'precision', 5);
 
 % Iteration counter
-i = 0;
+% i = 0;
 
-% Begin iterating
-while err > tol
-    i = i + 1;
-    % Pulls the x, y, thickness data from the results
-    updated_delta = [new_delta{1,2}{1,1}.p(1,:)' new_delta{1,2}{1,1}.p(2,:)' new_delta{1,2}{1,1}.d];
-    % Writing udpated thickness data points to csv
-    dlmwrite('next_thickness.csv', updated_delta, 'precision', 10);
- 
-    current_thickness = new_delta{1,2}{1,1}.d;
-    
-    % Upload new thickness to COMSOL interpolation
-    model.component('comp1').func('int2').set('filename', 'next_thickness.csv');
-    % Set shell thickness to new thickness
-    model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
-    
-    model.study('std1').run;
-    mphsave(model, 'simple_square.mph')
-    new_delta = mphplot(model, 'pg2');
-    next_thickness = new_delta{1,2}{1,1}.d;
-    err = sum(abs(current_thickness-next_thickness));
-    sprintf('%d Iteration', i)
-    sprintf('The error is %d', err)
-    pause
-end
+% % Begin iterating
+% while err > tol
+%     i = i + 1;
+%     % Pulls the x, y, thickness data from the results
+%     updated_delta = [new_delta{1,2}{1,1}.p(1,:)' new_delta{1,2}{1,1}.p(2,:)' new_delta{1,2}{1,1}.d];
+%     % Writing udpated thickness data points to csv
+%     dlmwrite('next_thickness.csv', updated_delta, 'precision', 10);
+%  
+%     current_thickness = new_delta{1,2}{1,1}.d;
+%     
+%     % Upload new thickness to COMSOL interpolation
+%     model.component('comp1').func('int2').set('filename', 'next_thickness.csv');
+%     % Set shell thickness to new thickness
+%     model.component('comp1').physics('ecs').prop('ds').set('ds', 'int2(x,y)');
+%     
+%     model.study('std1').run;
+%     mphsave(model, 'simple_square.mph')
+%     new_delta = mphplot(model, 'pg2');
+%     next_thickness = new_delta{1,2}{1,1}.d;
+%     err = sum(abs(current_thickness-next_thickness));
+%     sprintf('%d Iteration', i)
+%     sprintf('The error is %d', err)
+%     pause
+% end
 
 %% Commands so far
 %{
