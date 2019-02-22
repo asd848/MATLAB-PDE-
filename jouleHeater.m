@@ -85,7 +85,7 @@ zThickness = zThickness';
 % enough points for the fit to work. Try changing 'poly23' to 'poly12'.
 disp('Surface fit');
 %surfaceFit = fit([xPos,yPos],zThickness,'linearinterp')
-surfaceFit = fit([xPos,yPos],zThickness,'poly55')
+surfaceFit = fit([xPos,yPos],zThickness,'poly33')
 
 
 %% Apply coefficients to PDE
@@ -102,13 +102,13 @@ generateMesh(model,'hmax',0.3);
 solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;
-figure(2);
-pdeplot(model,'XYData',u,'Mesh','on')
-title('Voltage Map of the Window')
-xlabel('x')
-ylabel('y')
-set(gca,'FontSize',16)
-drawnow
+% figure(2);
+% pdeplot(model,'XYData',u,'Mesh','on')
+% title('Voltage Map of the Window')
+% xlabel('x')
+% ylabel('y')
+% set(gca,'FontSize',16)
+% drawnow
 
 %% Finding Voltage Gradient (Electric Field) Code
 [xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
