@@ -66,7 +66,7 @@ new_delta = mphplot(model, 'pg2');
 
 current_qj = mphinterp(model, 'ecs.Qsrh', 'coord', xy_coords', 'edim', 'boundary', 'selection',4);
 
-err = sum(sum(abs(qj_des{1,1}{1,1}.d-current_qj')))
+err = sum(sum(qj_des{1,1}{1,1}.d))
 
 
 %%
