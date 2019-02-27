@@ -5,7 +5,7 @@ voltage = 115;
 sizeSquare = 10;
 
 %% Tolerance for iteration termination
-tolerance = 1e-9;
+tolerance = 1e-16;
 
 %% Initial thickness guess, (uniform)
 i_thickness = ones(sizeSquare, sizeSquare);
