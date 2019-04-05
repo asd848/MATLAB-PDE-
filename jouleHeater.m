@@ -1,25 +1,26 @@
-function [outThick, qj] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
-% jouleHeater solves the electrostatics PDE and calculates thickness
-% for a desired surface watt density on a simplified square geometry
-% INPUTS:
-% sizeSquare: dimensions of no. of squares desired sizeSquare x sizeSquare
-% dcVoltage: voltage input (V)
-% thickness: inital guess for ITO thickness
-% qjDes: desired heating in watt/sq
-% OUTPUTS:
-% outThick: output thickness per square
-% qj: heating per square
+function [outThick, qj, gradv] = jouleHeater(sizeSquare,dcVoltage, thickness, qjDes)
+%INPUTS:
+%sizeSquare:
+%dcVoltage: voltage input (V)
+%thickness: inital guess for ITO thickness
+%qjDes: desired heating in watt/sq
+%OUTPUTS:
+%outThick: output thickness per square
+%qj: heating per square
 
-% Constants
+%% height and width represent how many squares should be along both the edges
 height= sizeSquare;
 width = sizeSquare;
-conductivity = 6.41E5; %% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
+
+%% S/m according to http://www.mit.edu/~6.777/matprops/ito.htm
+conductivity = 1e6; 
 numMeasurements = 10; %relevant for sampling the Qj in each square
 spacing = 1/numMeasurements;
 
+%% create PDE model
 model = createpde(); 
 
-% Creating the PDE geometry
+%% Setup the geometry of our complete obejct
 gd = (1:10)';
 ns = [""];
 sf = "";
@@ -40,75 +41,96 @@ ns = ns(2:end);
 g = decsg(gd, sf, ns);
 geometryFromEdges(model,g);
 
-% Applying boundary conditions (no current flux) to left and right edges
+
+%% Applying boundary conditions to edges
 for i = 1:height
-    %Left and Right Edges
+   %Left and Right Edges
    applyBoundaryCondition(model,'neumann','Edge',i,'q',0,'g',0);
    applyBoundaryCondition(model,'neumann','Edge',height*width*2-i,'q',0,'g',0);
 end
-% Applying boundary conditions (voltage input) to top and bottom edges 
 for i = 1:width
-    %Top and Bottom Edges (where we set our voltage)
+   %Top and Bottom Edges (where we set our voltage)
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)-i+1,'r',-dcVoltage,'h',1); %bottom boundary
    applyBoundaryCondition(model,'dirichlet','Edge',(height*width)*2-sizeSquare-i+1,'r',dcVoltage,'h',1); %top boundary
 end
 
 
-% In the for loop below, 'c' is the electric conductance of the material.
-% Eventually, it should be referencing a matrix as it iterates, but for 
-% now, it is set to 1.
-conductance = zeros(sizeSquare, sizeSquare);
+%Interpolating thickness to make it a continuous function
+%If it isn't continuous then it continuity boundary conditions between
+%square interfaces won't be able to work.
 
-% Applying the conductance to each square
+%% Decompose thickness matrix into x-y positions with a z value
+xLength = size(thickness,2);
+yLength = size(thickness,1);
+xSpacing = linspace(0,xLength,xLength);
+ySpacing = linspace(yLength,0,yLength);
+xPos = [];
+yPos = [];
+zThickness = [];
+for k = 1:xLength
+    for m = 1:yLength
+        xPos = [xPos xSpacing(k)];
+        yPos = [yPos ySpacing(m)];
+        zThickness= [zThickness thickness(m,k)];
+    end
+end
+xPos = xPos';
+yPos = fliplr(yPos);
+yPos = yPos';
+
+zThickness = zThickness';
+%surfaceFit is a function z(x,y), which takes in x and y position and
+%outputs thickness. Fit can be adjusted with last parameter.
+% WARNING!!! If program crashes it may be because zThickness did not have
+% enough points for the fit to work. Try changing 'poly23' to 'poly12'.
+disp('Surface fit');
+%surfaceFit = fit([xPos,yPos],zThickness,'linearinterp')
+surfaceFit = fit([xPos,yPos],zThickness,'poly33')
+
+
+%% Apply coefficients to PDE
+%In the for loop below, 'c' is the electric conductance of the material.
+conductance = @(location,state) surfaceFit(location.x,location.y)*conductivity*width./sizeSquare; %sizeSquare is to scale our thing down to 1
 for i = 1:width
     for j = 1:height
-       conductance(i,j) = conductivity*thickness(i,j)*width/sizeSquare;
-       specifyCoefficients(model,'m',0,'d',0,'c',conductance(i,j),'a',0,'f',0,'face',(i-1)*height+j) ;
+       specifyCoefficients(model,'m',0,'d',0,'c',conductance,'a',0,'f',0,'face',(i-1)*height+j) ;
     end
 end
 
-% Plots for viewing geometry
-% figure(4);
-% pdegplot(model, 'EdgeLabels', 'on')
-generateMesh(model);
-solution = solvepde(model); % for steady state problems
+%% Get voltage solution from mesh of geometry
+generateMesh(model,'hmax',0.3);
+solution = solvepde(model); % for stationary problems
 
 u = solution.NodalSolution;
-
-% Plotting the voltage drop across the geometry
-figure(2);
-pdeplot(model,'XYData',u,'Mesh','on')
-title('Voltage Map of the Window')
-xlabel('x')
-ylabel('y')
-drawnow
-
+% figure(2);
+% pdeplot(model,'XYData',u,'Mesh','on')
+% title('Voltage Map of the Window')
+% xlabel('x')
+% ylabel('y')
+% set(gca,'FontSize',16)
+% drawnow
 
 %% Finding Voltage Gradient (Electric Field) Code
-
-% Creating x and y data points in each square so that we may evaluate the
-% gradient at each point in each square
 [xData, yData] = meshgrid(spacing:spacing:sizeSquare, spacing:spacing:sizeSquare);
 mesh = [xData(:) yData(:)]; %% Not the mesh used in solving the PDE !!!!
 xData = mesh(1:end,1);
 yData = mesh(1:end,2);
-
-% uintrp = interpolateSolution(results,xData, yData);
 
 [gradx, grady] = evaluateGradient(solution, xData, yData);
 
 gradx = sizeSquare.*gradx;
 grady = sizeSquare.*grady;
 
-% Calculating the Qj for each point within each
-% square
+gradv = sqrt(gradx.^2+grady.^2);
+
+%% Calculate volumetric joule heating
 for i = 1:length(xData)
     for j  = 1:length(yData)
         Qj(i,j) = conductivity* (gradx(i).^2 + grady(j).^2);
     end
 end
 
-% Calculate average Qj for each square
+%% Calculate average Qj for each square
 avgQj = zeros(sizeSquare,sizeSquare);
 for i = 1:sizeSquare
     for j = 1:sizeSquare
@@ -122,10 +144,7 @@ for i = 1:sizeSquare
 end
 
 %% Getting output thickness
-outThick = zeros(sizeSquare, sizeSquare);
-
 outThick  = qjDes./avgQj;
-qj = avgQj.*outThick;
-
+qj = avgQj.*thickness;
 end
 

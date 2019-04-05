@@ -1,38 +1,79 @@
-% IterSolver_V1 that runs the iterative solver to find thickness for a desired
-% watt density
-
-% System parameters
+%% Getting XY Data from a solution
 voltage = 115;
-sizeSquare = 5;
-tolerance = 1e-9;
 
-% Initial thickness guess
-i_thickness = ones(sizeSquare, sizeSquare);
+%% The number of squares along one edge
+sizeSquare = 10;
 
-% Desired watt density
-qjDes = randi(5,5);
+%% Tolerance for iteration termination
+tolerance = 1e-16;
 
-% Initial solution
-[out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
+%% Initial thickness guess, (uniform)
+i_thickness = 3.78e-8*ones(sizeSquare, sizeSquare);
 
-% Error calculation
+%% Desired surcace heating of the global window in matrix form
+% load('actual_watt_density_global.mat');
+% qjDes = actual_watt_density_global./0.0254^2;
+qjDes = 3000:-2000/9:1000;
+qjDes = [qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes'];
+
+figure(1);
+contour(qjDes);
+set(gca, 'FontSize', 12);
+xlabel('x');
+ylabel('y');
+title('Contour Plot of Desired Heating');
+contourcbar;
+
+
+figure(2);
+image(i_thickness);
+set(gca, 'FontSize', 12);
+xlabel('x');
+ylabel('y');
+title('Contour Plot of Initial Thickness');
+
+
+%% Initial call to jouleHeater to get a matrix of thicknesses and surface joule heating
+[out_thickness, qj, gradv] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
+fprintf('The watt density is \n');
+disp(qj)
+
+figure(3);
+contour(out_thickness);
+set(gca, 'FontSize', 12);
+xlabel('x');
+ylabel('y');
+title('Contour Plot of Iteration 1 Thickness Profile');
+contourcbar;
+
+
+%% Initial error calculation
 err = abs(sum(sum(out_thickness - i_thickness)));
 fprintf('The applied voltage is %d V \n', voltage)
 fprintf('The desired watt density is \n')
 disp(qjDes)
+
 i = 0;
 
-% Begin iterative method
+%% Iterations terminate if error drops below tolerance
 while(err > tolerance)
+   % count iterations
    i = i + 1;
-   i_thickness = out_thickness;
-   [out_thickness, qj] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
-   err = abs(sum(sum(out_thickness - i_thickness)));
    
+   % update input thickness to be previous iterations output thickness
+   i_thickness = out_thickness;
+   
+   % call to jouleHeater to solve for new thicknesses
+   [out_thickness, qj, gradv] = jouleHeater(sizeSquare,voltage, i_thickness, qjDes);
+   
+   % recalculate the error between thickness iterations currently looking 
+   % at the sum of all the entries in the matrix as our metric
+   err = abs(sum(sum(out_thickness - i_thickness)));
    fprintf('Iteration %d \n', i);
    fprintf('This is the error %d\n', err);
    fprintf('The thickness is \n');
    disp(out_thickness);
    fprintf('The watt density is \n');
    disp(qj)
+   pause
 end
