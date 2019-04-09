@@ -14,7 +14,7 @@ model = mphload('window1.mph');
 
 % Global parameters for iterative method
 alpha = 1e-2;
-tol = 2e-7;
+tol =1e-16;
 err = 1;
 
 %% Interpolating data with COMSOL from csv file
@@ -150,6 +150,9 @@ while err > tol || mean(current_qj-qj_des) >= .02 %&& i < 80
     current_qj_data = [xy_coords(:,1:2) current_qj];
     dlmwrite('current_qj.csv', current_qj_data, 'precision', 10);
     disp(mean(current_qj-qj_des))
+    disp(std(current_qj-qj_des))
+    disp(max(current_qj-qj_des))
+    disp(min(current_qj-qj_des))
     percent_error = abs(qj_des-current_qj)./qj_des;
     % Update delta
     updated_delta = suspect_updating(i, current_qj, qj_des, current_delta);
