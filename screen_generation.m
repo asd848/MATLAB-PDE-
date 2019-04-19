@@ -5,7 +5,6 @@ delta_matrix = load('current_delta.csv');
 x = delta_matrix(:,1);
 y = delta_matrix(:,2);
 delta = delta_matrix(:,3);
-pause
 surface_fit = fit([x y], delta, 'linearinterp');
 
 delta_matrix = zeros(10,10);
@@ -82,5 +81,4 @@ for i=1:10
     end
 end
 
-image(delta_matrix)
 

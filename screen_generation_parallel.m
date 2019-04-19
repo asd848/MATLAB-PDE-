@@ -44,15 +44,16 @@ for i=1:10
             window_grid_y(i,j+1); window_grid_y(i+1,j+1); window_grid_y(i+1,j)];
     end
 end
-R1 = [gd; zeros(4,100)];
-C1 = [2,6,0, fliplr(x_top_points(1:4)), 0, 0.5309, fliplr(y_top_points(1:4)),0]';
-gd = [R1, C1];
-
-sf = 'R1-C1';
-ns = char('R1', 'C1')';
+% R1 = [gd; zeros(4,100)];
+% C1 = [2,6,0, fliplr(x_top_points(1:4)), 0, 0.5309, fliplr(y_top_points(1:4)),0]';
+% gd = [R1, C1];
+% 
+% sf = 'R1-C1';
+% ns = char('R1', 'C1')';
 model = createpde(); 
-dl = decsg(gd,sf,ns);
+% dl = decsg(gd,sf,ns);
 % Plotting the geometry
+dl = decsg(gd);
 figure(1);
 pdegplot(dl) %'FaceLabels', 'on', 'EdgeLabels', 'on')
 
