@@ -81,8 +81,32 @@ for i=1:10
     end
 end
 
+%%
+four_mesh = .64;
+ten_mesh = .58;
+twenty_mesh = .46;
+fourty_mesh = .38;
+mesh_vector = [four_mesh, ten_mesh, twenty_mesh, fourty_mesh, fourty_mesh*ten_mesh, fourty_mesh*twenty_mesh];
+mesh_symbols = [4, 10, 20, 40, 50, 60];
+mesh_matrix = zeros(10,10);
+%thickness_ratio_matrix = zeros(10,l0);
+for j=1:10
+    column_thickness_max = max(delta_matrix(:,j));
+    for i=1:10
+        if(delta_matrix(i:j) ~= 0)
+            thickness_ratio = delta_matrix(i,j)/column_thickness_max;
+            mesh_matrix(i,j) = four_mesh;
+            for k=1:6
+                c = thickness_ratio*four_mesh-mesh_vector(i);
+                if(c < mesh_matrix(i,j))
+                    mesh_matrix(i,j) = mesh_vector(k);
+                end
+            end
+        end
+    end
+end
 
-
+heatmap
 
 
 

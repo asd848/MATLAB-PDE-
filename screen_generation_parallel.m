@@ -148,7 +148,7 @@ for i=1:3
         
         delta_matrix(11-i,j) = mean(fit_data);
         idx = idx+1;
-        pause;
+ 
     end
 end
 
@@ -168,7 +168,7 @@ for i=4:5
         
         delta_matrix(11-i,j) = mean(fit_data);
         idx = idx+1;
-        pause;
+     
 
     end
 end
@@ -189,7 +189,7 @@ for i=6:8
         
         delta_matrix(11-i,j) = mean(fit_data);
         idx=idx+1;
-        pause;
+     
 
     end
 end
@@ -210,23 +210,39 @@ for i=9:10
         
         delta_matrix(11-i,j) = mean(fit_data);
         idx=idx+1;
-        pause;
+        
     end
 end
 
 %%
-figure(6)
- temp_model = createpde();
-        temp_geo = decsg(window_geom(:,39));
-        pdegplot(temp_geo)
-        geometryFromEdges(temp_model,temp_geo);
-        mesh = generateMesh(temp_model);
-        generateMesh(temp_model);
-        x_data = mesh.Nodes(1,:);
-        y_data = mesh.Nodes(2,:);
-        
-        fit_data = surface_fit(x_data,y_data);
-        fit_data = fit_data(~isnan(fit_data));
-        
-        delta_matrix(11-i,j) = mean(fit_data);
-        idx = idx+1;
+
+four_mesh = .64;
+ten_mesh = .58;
+twenty_mesh = .46;
+fourty_mesh = .38;
+mesh_vector = [four_mesh, ten_mesh, twenty_mesh, fourty_mesh, fourty_mesh*ten_mesh, fourty_mesh*twenty_mesh];
+mesh_symbols = [4, 10, 20, 40, 50, 60];
+mesh_matrix = zeros(10,10);
+%thickness_ratio_matrix = zeros(10,l0);
+for j=1:10
+    column_thickness_max = max(delta_matrix(:,j));
+    for i=1:10
+        if(delta_matrix(i:j) ~= 0)
+            thickness_ratio = delta_matrix(i,j)/column_thickness_max;
+            %disp(thickness_ratio);
+            mesh_matrix(i,j) = 1;
+            for k=1:6
+                c = abs(thickness_ratio*four_mesh-mesh_vector(k));
+                %disp(c);
+                %disp(mesh_matrix(i,j));
+                %disp(i);
+                %disp(j);
+                if(c < mesh_matrix(i,j))
+                    mesh_matrix(i,j) = mesh_vector(k);
+                end
+            end
+        end
+    end
+end
+
+
