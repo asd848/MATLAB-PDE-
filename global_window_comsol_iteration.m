@@ -130,7 +130,7 @@ dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
 % Iteration counter
 i = 0;
 % Begin iterating
-while (err > tol || mean(current_qj-qj_des) >= .02) && i < 80
+while (err > tol || mean(current_qj-qj_des) >= .05)
     i = i + 1;
     % Grab current delta
     current_delta = updated_delta;
@@ -167,6 +167,10 @@ while (err > tol || mean(current_qj-qj_des) >= .02) && i < 80
     err = sum(abs(updated_delta-current_delta)); 
     sprintf('%d Iteration', i)
     sprintf('The error is %d', err)
+    disp('mean')
+    disp(mean(current_qj-qj_des));
+    disp('std')
+    disp(std(current_qj-qj_des));
 end
 
 %% Commands so far

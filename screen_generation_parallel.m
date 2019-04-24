@@ -55,7 +55,6 @@ for i=1:10
                 window_grid_x(i+1,j+1); window_grid_x(i+1,j); window_grid_y(i,j); ...
                 window_grid_y(i,j+1); window_grid_y(i+1,j+1); window_grid_y(i+1,j)];
             index = index+1;
-            disp('all positive');
             
         elseif(window_grid_x(i,j)>= 0 && window_grid_x(i,j+1)>= 0 && window_grid_x(i+1,j) <0 && window_grid_x(i+1,j+1)>=0)               
             m1 = (window_grid_y(i+1,j+1)-window_grid_y(i+1,j))/(window_grid_x(i+1,j+1)-window_grid_x(i+1,j));
@@ -76,7 +75,6 @@ for i=1:10
             end
             
             index = index+1;
-            disp('one negative');
             
         elseif(window_grid_x(i,j)< 0 && window_grid_x(i,j+1)>=0 && window_grid_x(i+1,j) <0 && window_grid_x(i+1,j+1)>=0)
             gd(1,index) = 2;
@@ -89,7 +87,6 @@ for i=1:10
             gd(3:10,index) = [0; window_grid_x(i,j+1); window_grid_x(i+1,j+1); 0;...
                 y2; window_grid_y(i,j+1); window_grid_y(i+1,j+1); y1];
             index = index+1;
-            disp('half negative');
             
         elseif(window_grid_x(i,j)< 0 && window_grid_x(i,j+1)>=0 && window_grid_x(i+1,j) <0 && window_grid_x(i+1,j+1)<0)
             gd(1,index) = 2;
@@ -102,9 +99,8 @@ for i=1:10
             gd(3:8,index) = [0; 0; window_grid_x(i,j+1);...
                 y2; window_grid_y(i,j+1);y1] 
             index = index+1;
-            disp('one positive');
         else
-            disp('all negative');
+
         end
     end
 end
@@ -221,28 +217,38 @@ ten_mesh = .58;
 twenty_mesh = .46;
 fourty_mesh = .38;
 mesh_vector = [four_mesh, ten_mesh, twenty_mesh, fourty_mesh, fourty_mesh*ten_mesh, fourty_mesh*twenty_mesh];
-mesh_symbols = [4, 10, 20, 40, 50, 60];
+mesh_symbols = [4, 10, 20, 30, 40, 50, 60];
 mesh_matrix = zeros(10,10);
 %thickness_ratio_matrix = zeros(10,l0);
 for j=1:10
     column_thickness_max = max(delta_matrix(:,j));
     for i=1:10
-        if(delta_matrix(i:j) ~= 0)
+        %disp(i*j);
+        %disp(delta_matrix(i:j));
+        if(delta_matrix(i,j) ~= 0)
+            %disp('here');
             thickness_ratio = delta_matrix(i,j)/column_thickness_max;
-            %disp(thickness_ratio);
             mesh_matrix(i,j) = 1;
             for k=1:6
-                c = abs(thickness_ratio*four_mesh-mesh_vector(k));
-                %disp(c);
-                %disp(mesh_matrix(i,j));
-                %disp(i);
-                %disp(j);
-                if(c < mesh_matrix(i,j))
+                c = abs((thickness_ratio*four_mesh)-mesh_vector(k));
+                if(c < abs((thickness_ratio*four_mesh)-mesh_matrix(i,j)))
                     mesh_matrix(i,j) = mesh_vector(k);
                 end
             end
         end
     end
 end
-
-
+%%
+mesh_matrix_symbolic = zeros(10, 10);
+for i = 1:10
+    for j= 1:10
+        for k = 1:6
+            if(mesh_matrix(i,j) == mesh_vector(k))
+                mesh_matrix_symbolic(i,j) = mesh_symbols(k);
+                disp(mesh_matrix_symbolic(i,j));
+            end
+        end
+    end
+end
+%%
+heatmap(mesh_matrix);
