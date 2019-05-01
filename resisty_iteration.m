@@ -11,10 +11,10 @@ tolerance = 1e-16;
 i_thickness = 3.78e-8*ones(sizeSquare, sizeSquare);
 %i_thickness = 1.0e-6*[.0199 .0441 .0789 .1231 .1717; .0166 .0367 .0657 .1026 .1431; .0133 .0294 .0526 .0821 .1145; .01 .022 .0394 .0616 .0858; .0066 .0147 .0263 .041 .0572];
 %% Desired surcace heating of the global window in matrix form
-% load('actual_watt_density_global.mat');
-% qjDes = actual_watt_density_global./0.0254^2;
-qjDes = 3000:-2000/9:1000;
-qjDes = [qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes'];
+load('qj_test.csv');
+qjDes = qj_test;
+%qjDes = 3000:-2000/9:1000;
+%qjDes = [qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes' qjDes'];
 
 figure(1);
 contour(qjDes);

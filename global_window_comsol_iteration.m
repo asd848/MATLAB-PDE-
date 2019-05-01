@@ -130,7 +130,7 @@ dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
 % Iteration counter
 i = 0;
 % Begin iterating
-while (err > tol || mean(current_qj-qj_des) >= .05)
+while (err > tol || mean(current_qj-qj_des) >= .05) && i <=72
     i = i + 1;
     % Grab current delta
     current_delta = updated_delta;
