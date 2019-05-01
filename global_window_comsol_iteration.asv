@@ -3,16 +3,15 @@
 % Global window geometry
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function main 
-
 %{
 Load the model using mphload command. NOTE: COMSOL model must be in the
 same directory as MATLAB script or you must provide the full path to the
 model
 %}
+function main 
 model = mphload('window1.mph');
 
-% System parameters
+% Global parameters for iterative method
 alpha = 1e-2;
 tol =1e-16;
 err = 1;
@@ -102,22 +101,34 @@ current_delta_data = [xy_coords(:,1:2) 3.18E-7*ones(length(xy_coords),1)];
 dlmwrite('current_delta.csv', current_delta_data, 'precision', 10);
 current_delta = current_delta_data(:,3);
 
+
+% figure(1);
+% mphplot(model, 'pg1');
+% figure(2);
+% mphplot(model, 'pg2');
+% figure(3);
+% mphplot(model, 'pg3');
+
 % Calculating the error
 sprintf('Iteration 1')
 err = sum(sum(abs(qj_des-current_qj)));
 sprintf('The error is %g', err)
 
 % Update Thickness
+% Nick's updating
+%updated_delta = current_delta + current_delta.*(current_qj./qj_des -1)*alpha;
 updated_delta = (qj_des./current_qj).*current_delta;
 updated_delta_data = [xy_coords(:,1:2) updated_delta];
 dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
+% percent_err = (qj_des-current_qj)./qj_des.*alpha;
 
+% Hanna's Updating
+% updated_delta = current_delta.*(1 - (qj_des-current_qj)./qj_des.*alpha);
 
-
-%% Begin iteration
-
+%%
+% Iteration counter
 i = 0;
-
+% Begin iterating
 while (err > tol || mean(current_qj-qj_des) >= .05) && i <=72
     i = i + 1;
     % Grab current delta
@@ -164,14 +175,11 @@ end
 
 %% Resisty updating method
 function [updated_delta] = suspect_updating(i, current_qj, qj_des, current_delta)
-% INPUTS:
-% i = iteration count
-% current_qj = ith joule heating 
-% qj_des = desired joule heating
-% current_delta = ith delta profile
-% OUTPUTS:
-% updated_delta = new delta profile
+% Inputs:
+% i: iteration count
+% current_qj: ith joule heating 
 
+   
    if mod(i,4) == 1
        updated_delta = current_delta.*(current_qj./qj_des);
    elseif mod(i,4) == 2
