@@ -13,7 +13,7 @@ model
 model = mphload('window1.mph');
 
 % System parameters
-tol = 1;
+tol = 10.123;
 
 %% Interpolating data with COMSOL from csv file
 
@@ -165,7 +165,7 @@ while err >= tol
     dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
 
     % Calculate error
-    err = sum(abs(updated_delta-current_delta)); 
+    err = mean(abs(current_qj-qj_des));
     
     sprintf('%d Iteration', i)
     sprintf('The error is %d', err)
