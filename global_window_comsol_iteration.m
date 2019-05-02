@@ -13,7 +13,7 @@ model
 model = mphload('window1.mph');
 
 % System parameters
-tol =1e-16;
+tol = 1;
 
 %% Interpolating data with COMSOL from csv file
 
@@ -130,7 +130,7 @@ dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
 %% Begin iteration
 i = 0;
 
-while err >= .05
+while err >= tol
     i = i + 1;
     
     % Grab current delta and write to the current delta csv file
