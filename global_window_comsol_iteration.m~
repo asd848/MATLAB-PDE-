@@ -149,24 +149,27 @@ while err >= .05
     model.study('std1').run;
     mphsave(model, 'window1.mph')
     
-    % Interpolate solution for qj and save to a csv file
+    % Interpolate solution for qj
     current_qj = mphinterp(model, 'ecs.Qsrh', 'coord', xy_coords', 'edim', 'boundary', 'selection',1);
     current_qj = current_qj';
     current_qj_data = [xy_coords(:,1:2) current_qj];
     dlmwrite('current_qj.csv', current_qj_data, 'precision', 10);
-    
-    % Update delta using Resisty updating method
-    updated_delta = resisty_updating(i, current_qj, qj_des, current_delta);
+    disp(mean(current_qj-qj_des))
+    disp(std(current_qj-qj_des))
+    disp(max(current_qj-qj_des))
+    disp(min(current_qj-qj_des))
+    percent_error = abs(qj_des-current_qj)./qj_des;
+    % Update delta
+    updated_delta = suspect_updating(i, current_qj, qj_des, current_delta);
      
     % Pulls the x, y, thickness data from the results
     updated_delta_data = [xy_coords(:,1:2) updated_delta];
-    
     % Writing udpated thickness data points to csv
     dlmwrite('next_thickness.csv', updated_delta_data, 'precision', 10);
-
+%     updated_delta = current_delta.*(1 - (qj_des-current_qj)./qj_des.*alpha);
     % Calculate error
+
     err = sum(abs(updated_delta-current_delta)); 
-    
     sprintf('%d Iteration', i)
     sprintf('The error is %d', err)
     disp('mean')
@@ -177,7 +180,7 @@ end
 end
 
 %% Resisty updating method
-function [updated_delta] = resisty_updating(i, current_qj, qj_des, current_delta)
+function [updated_delta] = suspect_updating(i, current_qj, qj_des, current_delta)
 % INPUTS:
 % i = iteration count
 % current_qj = ith joule heating 
