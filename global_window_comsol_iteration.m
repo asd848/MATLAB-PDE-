@@ -23,7 +23,7 @@ tol = 10.123;
 % model.component('comp1').func.create('int1', 'Interpolation');
 
 % Interpolation of desired joule heating
-model.component('comp1').func('int1').set('source', 'file'); % 
+model.component('comp1').func('int1').set('source', 'file');
 model.component('comp1').func('int1').set('filename', 'qj_desired_global.csv');
 model.component('comp1').func('int1').set('interp', 'linear');
 model.component('comp1').func('int1').set('nargs', 2);
