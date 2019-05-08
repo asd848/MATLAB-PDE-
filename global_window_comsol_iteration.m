@@ -1,4 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% global_window_comsol_iteration.m
 % Script for running COMSOL MATLAB iterative method via LiveLink for the
 % Global window geometry
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
